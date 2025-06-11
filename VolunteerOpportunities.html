@@ -1711,83 +1711,112 @@
   </style>
   
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Handle the "Other" seva option
-      const sevaInterest = document.getElementById('sevaInterest');
-      const otherSevaContainer = document.getElementById('otherSevaContainer');
-      
-      sevaInterest.addEventListener('change', function() {
-        if (this.value === 'other') {
-          otherSevaContainer.style.display = 'block';
-        } else {
-          otherSevaContainer.style.display = 'none';
-        }
-      });
-      
-      // Form submission
-      const volunteerForm = document.getElementById('volunteerApplicationForm');
-      
-      volunteerForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Form validation
-        const requiredFields = this.querySelectorAll('[required]');
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-          if (!field.value.trim()) {
-            field.style.borderColor = 'red';
-            isValid = false;
-          } else {
-            field.style.borderColor = '#ddd';
-          }
-        });
-        
-        if (!isValid) {
-          alert('Please fill in all required fields.');
-          return;
-        }
-        
-        // Simulate form submission
-        const submitBtn = this.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting...';
-        
-        setTimeout(() => {
-          // In a real implementation, you would send the form data to a server here
-          alert('Thank you for your application! We will contact you soon.');
-          volunteerForm.reset();
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Submit Application';
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 1500);
-      });
-      
-      // Enhanced animations on scroll
-      const animateElements = document.querySelectorAll('.animate-on-scroll');
-      
-      const animateOnScroll = function() {
-        animateElements.forEach(element => {
-          const elementTop = element.getBoundingClientRect().top;
-          const windowHeight = window.innerHeight;
-          
-          if (elementTop < windowHeight - 100) {
-            const delay = element.dataset.delay || 0;
-            
-            setTimeout(() => {
-              element.classList.add('animated');
-            }, delay * 1000);
-          }
-        });
-      };
-      
-      // Initial check
-      animateOnScroll();
-      
-      // Check on scroll
-      window.addEventListener('scroll', animateOnScroll);
+  document.addEventListener('DOMContentLoaded', function () {
+    // Handle the "Other" seva option
+    const sevaInterest = document.getElementById('sevaInterest');
+    const otherSevaContainer = document.getElementById('otherSevaContainer');
+
+    sevaInterest.addEventListener('change', function () {
+      if (this.value === 'other') {
+        otherSevaContainer.style.display = 'block';
+      } else {
+        otherSevaContainer.style.display = 'none';
+      }
     });
-  </script>
+
+    // Form submission
+    const volunteerForm = document.getElementById('volunteerApplicationForm');
+
+    volunteerForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Validate required fields
+      const requiredFields = this.querySelectorAll('[required]');
+      let isValid = true;
+
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          field.style.borderColor = 'red';
+          isValid = false;
+        } else {
+          field.style.borderColor = '#ddd';
+        }
+      });
+
+      if (!isValid) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
+      const availabilityCheckboxes = volunteerForm.querySelectorAll('input[name="availability"]:checked');
+      const availability = Array.from(availabilityCheckboxes).map(cb => cb.value);
+
+      const data = {
+        fullName: volunteerForm.fullName.value,
+        email: volunteerForm.email.value,
+        phone: volunteerForm.phone.value,
+        age: volunteerForm.age.value,
+        sevaInterest: volunteerForm.sevaInterest.value,
+        otherSeva: volunteerForm.otherSeva?.value || '',
+        availability: availability,
+        experience: volunteerForm.experience.value,
+        skills: volunteerForm.skills.value,
+        motivation: volunteerForm.motivation.value
+      };
+
+      const submitBtn = volunteerForm.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      fetch("https://script.google.com/macros/s/AKfycbxJpcj20Aqiv81m7lXZ4Hxuu3a0yldVhS-wzfG0WbkDmnC0psGnjlKbVUqxiokpPlwy/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.json())
+      .then(res => {
+        alert("Thank you for your application!");
+        volunteerForm.reset();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(err => {
+        alert("Something went wrong. Please try again.");
+        console.error(err);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
+      });
+    });
+
+    // Enhanced animations on scroll
+    const animateElements = document.querySelectorAll('.animate-on-scroll');
+
+    const animateOnScroll = function () {
+      animateElements.forEach(element => {
+        const elementTop = element.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+
+        if (elementTop < windowHeight - 100) {
+          const delay = element.dataset.delay || 0;
+
+          setTimeout(() => {
+            element.classList.add('animated');
+          }, delay * 1000);
+        }
+      });
+    };
+
+    // Initial check
+    animateOnScroll();
+
+    // Check on scroll
+    window.addEventListener('scroll', animateOnScroll);
+  });
+</script>
+
 </main>
 <!-- Footer -->
 <footer>
